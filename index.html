@@ -3,57 +3,93 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LogGPT Platform</title>
+<title>LogGPT Pro</title>
 
 <style>
-body {
+* {
     margin: 0;
-    font-family: Arial, sans-serif;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', sans-serif;
     background: #0f172a;
     color: white;
 }
 
+/* HEADER */
 header {
-    background: #020617;
-    padding: 15px;
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    padding: 15px 30px;
+    background: #020617;
+    position: sticky;
+    top: 0;
 }
 
-header h1 {
+.logo {
     color: #38bdf8;
+    font-weight: bold;
+}
+
+nav {
+    display: flex;
+    gap: 20px;
 }
 
 nav a {
     color: white;
-    margin: 10px;
     text-decoration: none;
 }
 
+.menu-btn {
+    display: none;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+/* HERO */
 .hero {
     text-align: center;
-    padding: 100px 20px;
+    padding: 80px 20px;
     background: linear-gradient(to right, #1e293b, #020617);
 }
 
-.hero h2 {
-    font-size: 40px;
+.hero h1 {
+    font-size: 45px;
+}
+
+.hero p {
+    margin: 20px 0;
 }
 
 .hero button {
-    padding: 15px 30px;
+    padding: 12px 25px;
     background: #38bdf8;
     border: none;
     cursor: pointer;
-    margin-top: 20px;
 }
 
+/* SEARCH */
+.search {
+    text-align: center;
+    margin: 20px;
+}
+
+.search input {
+    width: 60%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+}
+
+/* GRID */
 .grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
-    padding: 40px;
+    padding: 30px;
 }
 
 .card {
@@ -64,13 +100,53 @@ nav a {
 }
 
 .card:hover {
-    transform: scale(1.05);
+    transform: translateY(-5px);
 }
 
+/* DASHBOARD */
+.dashboard {
+    display: none;
+    padding: 30px;
+}
+
+.stats {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.stat {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* FOOTER */
 footer {
     text-align: center;
     padding: 20px;
     background: #020617;
+}
+
+/* MOBILE */
+@media(max-width: 768px) {
+    nav {
+        display: none;
+        flex-direction: column;
+        background: #020617;
+        position: absolute;
+        top: 60px;
+        right: 0;
+        width: 200px;
+    }
+
+    nav.active {
+        display: flex;
+    }
+
+    .menu-btn {
+        display: block;
+    }
 }
 </style>
 </head>
@@ -78,45 +154,87 @@ footer {
 <body>
 
 <header>
-    <h1>LogGPT</h1>
-    <nav>
+    <div class="logo">LogGPT</div>
+    <div class="menu-btn" onclick="toggleMenu()">☰</div>
+    <nav id="menu">
         <a href="#">Accueil</a>
-        <a href="#">Services</a>
+        <a href="#" onclick="openDashboard()">Dashboard</a>
         <a href="#">Contact</a>
     </nav>
 </header>
 
 <section class="hero">
-    <h2>Plateforme intelligente & moderne</h2>
-    <p>Crée ton futur digital avec une interface puissante</p>
-    <button onclick="alert('Bienvenue sur LogGPT 🚀')">Commencer</button>
+    <h1>Plateforme intelligente</h1>
+    <p>Créer, gérer et évoluer dans le digital</p>
+    <button onclick="notify()">Commencer</button>
 </section>
+
+<div class="search">
+    <input type="text" id="search" placeholder="Rechercher un service..." onkeyup="filter()">
+</div>
 
 <section class="grid" id="grid"></section>
 
+<section class="dashboard" id="dashboard">
+    <h2>Dashboard</h2>
+    <div class="stats">
+        <div class="stat">👤 Utilisateur: Actif</div>
+        <div class="stat">📊 Services: 100</div>
+        <div class="stat">💬 Messages: 5</div>
+    </div>
+</section>
+
 <footer>
-    <p>© 2026 LogGPT - Tous droits réservés</p>
+    <p>© 2026 LogGPT Pro</p>
 </footer>
 
 <script>
-// Génération automatique de 100 services
-const grid = document.getElementById("grid");
-
-for(let i = 1; i <= 100; i++) {
-    const card = document.createElement("div");
-    card.className = "card";
-
-    card.innerHTML = `
-        <h3>Service ${i}</h3>
-        <p>Description du service numéro ${i}. Plateforme intelligente.</p>
-        <button onclick="voir(${i})">Voir plus</button>
-    `;
-
-    grid.appendChild(card);
+// MENU MOBILE
+function toggleMenu() {
+    document.getElementById("menu").classList.toggle("active");
 }
 
-function voir(id) {
-    alert("Service " + id + " sélectionné !");
+// NOTIFICATION
+function notify() {
+    alert("Bienvenue sur LogGPT Pro 🚀");
+}
+
+// DASHBOARD
+function openDashboard() {
+    document.getElementById("dashboard").style.display = "block";
+    window.scrollTo(0, document.body.scrollHeight);
+}
+
+// SERVICES
+const grid = document.getElementById("grid");
+
+let services = [];
+
+for(let i = 1; i <= 100; i++) {
+    services.push("Service " + i);
+}
+
+function display(list) {
+    grid.innerHTML = "";
+    list.forEach((s, i) => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+            <h3>${s}</h3>
+            <p>Description professionnelle du ${s}</p>
+            <button onclick="alert('${s}')">Voir</button>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+display(services);
+
+// RECHERCHE
+function filter() {
+    let val = document.getElementById("search").value.toLowerCase();
+    let filtered = services.filter(s => s.toLowerCase().includes(val));
+    display(filtered);
 }
 </script>
 
